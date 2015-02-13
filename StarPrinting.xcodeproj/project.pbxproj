@@ -41,6 +41,9 @@
 		57ECD05018D8E97600EE51FF /* StarIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57ECD04F18D8E97600EE51FF /* StarIO.framework */; };
 		57ECD05118D8E98100EE51FF /* StarIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57ECD04F18D8E97600EE51FF /* StarIO.framework */; };
 		57ECD05318D8E98800EE51FF /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57ECD05218D8E98800EE51FF /* SenTestingKit.framework */; };
+		D47F97DD1A8DE77D002DDD76 /* RasterDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = D47F97DC1A8DE77D002DDD76 /* RasterDocument.m */; };
+		D47F97E01A8DE7DF002DDD76 /* StarBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = D47F97DF1A8DE7DF002DDD76 /* StarBitmap.m */; };
+		D47F97E31A8DE8C5002DDD76 /* PrinterFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = D47F97E21A8DE8C5002DDD76 /* PrinterFunctions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,6 +124,13 @@
 		57ECD04D18D8E94900EE51FF /* PrinterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterCell.m; sourceTree = "<group>"; };
 		57ECD04F18D8E97600EE51FF /* StarIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = StarIO.framework; sourceTree = "<group>"; };
 		57ECD05218D8E98800EE51FF /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		D47F97DB1A8DE75E002DDD76 /* RasterDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RasterDocument.h; sourceTree = "<group>"; };
+		D47F97DC1A8DE77D002DDD76 /* RasterDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RasterDocument.m; sourceTree = "<group>"; };
+		D47F97DE1A8DE7B1002DDD76 /* StarBitmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StarBitmap.h; sourceTree = "<group>"; };
+		D47F97DF1A8DE7DF002DDD76 /* StarBitmap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StarBitmap.m; sourceTree = "<group>"; };
+		D47F97E11A8DE889002DDD76 /* PrinterFunctions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrinterFunctions.h; sourceTree = "<group>"; };
+		D47F97E21A8DE8C5002DDD76 /* PrinterFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterFunctions.m; sourceTree = "<group>"; };
+		D47F97E41A8DE914002DDD76 /* CommonEnum.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonEnum.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,6 +233,13 @@
 				57777E2618DB696E00922AE5 /* PrintData.h */,
 				57777E2718DB696E00922AE5 /* PrintData.m */,
 				57ECCF9D18D8AD5E00EE51FF /* Supporting Files */,
+				D47F97DB1A8DE75E002DDD76 /* RasterDocument.h */,
+				D47F97DC1A8DE77D002DDD76 /* RasterDocument.m */,
+				D47F97DE1A8DE7B1002DDD76 /* StarBitmap.h */,
+				D47F97DF1A8DE7DF002DDD76 /* StarBitmap.m */,
+				D47F97E11A8DE889002DDD76 /* PrinterFunctions.h */,
+				D47F97E21A8DE8C5002DDD76 /* PrinterFunctions.m */,
+				D47F97E41A8DE914002DDD76 /* CommonEnum.h */,
 			);
 			path = StarPrinting;
 			sourceTree = "<group>";
@@ -349,6 +366,7 @@
 		57ECCF8F18D8AD5E00EE51FF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastTestingUpgradeCheck = 0610;
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = OpenTable;
 				TargetAttributes = {
@@ -409,8 +427,11 @@
 			files = (
 				57ECD02B18D8B01800EE51FF /* Printer.m in Sources */,
 				57777E2818DB696E00922AE5 /* PrintData.m in Sources */,
+				D47F97E31A8DE8C5002DDD76 /* PrinterFunctions.m in Sources */,
 				57ECD02D18D8B01800EE51FF /* PrintTextFormatter.m in Sources */,
+				D47F97DD1A8DE77D002DDD76 /* RasterDocument.m in Sources */,
 				57ECD02C18D8B01800EE51FF /* PrintParser.m in Sources */,
+				D47F97E01A8DE7DF002DDD76 /* StarBitmap.m in Sources */,
 				57ECD02A18D8B01800EE51FF /* Printable.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

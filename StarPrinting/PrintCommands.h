@@ -19,36 +19,36 @@ typedef enum PrinterBarcodeType
     PrinterBarcodeTypeNW7
 } PrinterBarcodeType;
 
-#define kPrinterCMD_Tab                 @"\x09"
-#define kPrinterCMD_Newline             @"\x0A"
+#define kPrinterCMD_Tab                 @""
+#define kPrinterCMD_Newline             @""
 
 // Alignment
-#define kPrinterCMD_AlignCenter         @"\x1b\x1d\x61\x01"
-#define kPrinterCMD_AlignLeft           @"\x1b\x1d\x61\x00"
-#define kPrinterCMD_AlignRight          @"\x1b\x1d\x61\x02"
-#define kPrinterCMD_HorizTab            @"\x1b\x44\x02\x10\x22\x00"
+#define kPrinterCMD_AlignCenter         @""
+#define kPrinterCMD_AlignLeft           @""
+#define kPrinterCMD_AlignRight          @""
+#define kPrinterCMD_HorizTab            @""
 
 
 // Text Formatting
-#define kPrinterCMD_StartBold           @"\x1b\x45"
-#define kPrinterCMD_EndBold             @"\x1b\x46"
-#define kPrinterCMD_StartUnderline      @"\x1b\x2d\x01"
-#define kPrinterCMD_EndUnderline        @"\x1b\x2d\x00"
-#define kPrinterCMD_StartUpperline      @"\x1b\x5f\x01"
-#define kPrinterCMD_EndUpperline        @"\x1b\x5f\x00"
+#define kPrinterCMD_StartBold           @""
+#define kPrinterCMD_EndBold             @""
+#define kPrinterCMD_StartUnderline      @""
+#define kPrinterCMD_EndUnderline        @""
+#define kPrinterCMD_StartUpperline      @""
+#define kPrinterCMD_EndUpperline        @""
 
-#define kPrinterCMD_StartDoubleHW       @"\x1b\x69\x01\x01"
-#define kPrinterCMD_EndDoubleHW         @"\x1b\x69\x00\x00"
+#define kPrinterCMD_StartDoubleHW       @""
+#define kPrinterCMD_EndDoubleHW         @""
 
-#define kPrinterCMD_StartInvertColor    @"\x1b\x34"
-#define kPrinterCMD_EndInvertColor      @"\x1b\x35"
+#define kPrinterCMD_StartInvertColor    @""
+#define kPrinterCMD_EndInvertColor      @""
 
 
 // Cutting
-#define kPrinterCMD_CutFull             @"\x1b\x64\x02"
-#define kPrinterCMD_CutPartial          @"\x1b\x64\x03"
+#define kPrinterCMD_CutFull             @""
+#define kPrinterCMD_CutPartial          @""
 
 
 // Barcode
-#define kPrinterCMD_StartBarcode        @"\x1b\x62\x06\x02\x02\x20" "12ab34cd56\x1e\r\n"
-#define kPrinterCMD_EndBarcode          @"\x1e"
+#define kPrinterCMD_StartBarcode        @"" "12ab34cd56\r\n"
+#define kPrinterCMD_EndBarcode          @""

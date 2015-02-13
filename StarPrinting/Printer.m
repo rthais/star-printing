@@ -47,35 +47,35 @@ static char const * const ConnectJobTag = "ConnectJobTag";
     printer.modelName = port.modelName;
     printer.portName = port.portName;
     printer.macAddress = port.macAddress;
-    
+
     [printer initialize];
-    
+
     return printer;
 }
 
 + (Printer *)connectedPrinter
 {
     if (connectedPrinter) return connectedPrinter;
-    
+
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if([defaults objectForKey:kConnectedPrinterKey]) {
         NSData *encoded = [defaults objectForKey:kConnectedPrinterKey];
         connectedPrinter = [NSKeyedUnarchiver unarchiveObjectWithData:encoded];
         return connectedPrinter;
     }
-    
+
     return nil;
 }
 
 + (void)search:(PrinterSearchBlock)block
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        
+
         NSArray *found = [PORT_CLASS searchPrinter];
-        
+
         NSMutableArray *printers = [NSMutableArray arrayWithCapacity:[found count]];
         Printer *lastKnownPrinter = [Printer connectedPrinter];
-        
+
         for(PortInfo *p in found) {
             Printer *printer = [Printer printerFromPort:p];
             if([printer.macAddress isEqualToString:lastKnownPrinter.macAddress]) {
@@ -84,7 +84,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
                 [printers addObject:printer];
             }
         }
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             block(printers);
         });
@@ -102,35 +102,35 @@ static char const * const ConnectJobTag = "ConnectJobTag";
         case PrinterStatusConnected:
             return NSLocalizedString(@"Connected", @"Connected");
             break;
-            
+
         case PrinterStatusConnecting:
             return NSLocalizedString(@"Connecting", @"Connecting");
             break;
-            
+
         case PrinterStatusDisconnected:
             return NSLocalizedString(@"Disconnected", @"Disconnected");
             break;
-            
+
         case PrinterStatusLowPaper:
             return NSLocalizedString(@"Low Paper", @"Low Paper");
             break;
-            
+
         case PrinterStatusCoverOpen:
             return NSLocalizedString(@"Cover Open", @"Cover Open");
             break;
-            
+
         case PrinterStatusOutOfPaper:
             return NSLocalizedString(@"Out of Paper", @"Out of Paper");
             break;
-            
+
         case PrinterStatusConnectionError:
             return NSLocalizedString(@"Connection Error", @"Connection Error");
             break;
-            
+
         case PrinterStatusLostConnectionError:
             return NSLocalizedString(@"Lost Connection", @"Lost Connection");
             break;
-            
+
         case PrinterStatusPrintError:
             return NSLocalizedString(@"Print Error", @"Print Error");
             break;
@@ -152,7 +152,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
     self.queue = [[NSOperationQueue alloc] init];
     self.queue.maxConcurrentOperationCount = 1;
     self.previousOnlineStatus = PrinterStatusDisconnected;
-    
+
     [self performCompatibilityCheck];
 }
 
@@ -174,7 +174,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
         self.friendlyName = [aDecoder decodeObjectForKey:@"friendlyName"];
         [self initialize];
     }
-    
+
     return self;
 }
 
@@ -183,7 +183,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 - (BOOL)openPort
 {
     BOOL error = NO;
-    
+
     @try {
         self.port = [PORT_CLASS getPort:self.portName :@"" :3000];
         if(!self.port) {
@@ -193,7 +193,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
         self.status = PrinterStatusUnknownError;
         error = YES;
     }
-    
+
     return !error;
 }
 
@@ -211,10 +211,10 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 - (void)addJob:(PrinterJobBlock)job
 {
     if([self isHeartbeatJob:job] && [self.jobs count] > 0) return;
-    
+
     [self.jobs addObject:job];
     [self printJobCount:@"Adding job"];
-    
+
     if([self.jobs count] == 1 || self.queue.operationCount == 0) {
         [self runNext];
     }
@@ -223,19 +223,19 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 - (void)runNext
 {
     PrinterOperationBlock block = ^{
-        
+
         if([self.jobs count] == 0) return;
-        
+
         PrinterJobBlock job = self.jobs[0];
         BOOL portConnected = NO;
-        
+
         for(int i = 0; i < 20; i++) {
             portConnected = [self openPort];
             if(portConnected) break;
             [self log:@"Retrying to open port!"];
             usleep(1000 * 333);
         }
-        
+
         if(!portConnected) {
             // Printer is offline
             if(self.status != PrinterStatusUnknownError) {
@@ -249,11 +249,11 @@ static char const * const ConnectJobTag = "ConnectJobTag";
             // Printer is online but might have an error
             [self updateStatus];
         }
-        
+
         job(portConnected);
         [self releasePort];
     };
-    
+
     [self.queue addOperationWithBlock:block];
 }
 
@@ -273,14 +273,14 @@ static char const * const ConnectJobTag = "ConnectJobTag";
         double delayInSeconds = kJobRetryInterval;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-            
+
             if([self.jobs count] == 0) return;
             [self log:@"***** RETRYING JOB ******"];
-            
+
             PrinterJobBlock job = self.jobs[0];
             [self.jobs removeObjectAtIndex:0];
             [self.jobs addObject:job];
-            
+
             [self runNext];
         });
     }
@@ -291,12 +291,12 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 - (void)connect:(PrinterResultBlock)result
 {
     [self log:@"Attempting to connect"];
-    
+
     connectedPrinter = self;
     self.status = PrinterStatusConnecting;
-    
+
     PrinterJobBlock connectJob = ^(BOOL portConnected) {
-        
+
         if(!portConnected) {
             [self jobFailedRetry:YES];
             [self log:@"Failed to connect"];
@@ -305,26 +305,26 @@ static char const * const ConnectJobTag = "ConnectJobTag";
             [self jobWasSuccessful];
             [self log:@"Successfully connected"];
         }
-        
+
         if(result) {
             result(portConnected);
         }
     };
-    
+
     objc_setAssociatedObject(connectJob, ConnectJobTag, @1, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
+
     [self addJob:connectJob];
 }
 
 - (void)establishConnection
 {
     if(!self.isOnlineWithError) self.status = PrinterStatusConnected;
-    
+
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSData *encoded = [NSKeyedArchiver archivedDataWithRootObject:self];
     [defaults setObject:encoded forKey:kConnectedPrinterKey];
     [defaults synchronize];
-    
+
     [self startHeartbeat];
 }
 
@@ -332,10 +332,10 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 {
     self.status = PrinterStatusDisconnected;
     connectedPrinter = nil;
-    
+
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults removeObjectForKey:kConnectedPrinterKey];
-    
+
     [self stopHeartbeat];
 }
 
@@ -344,48 +344,48 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 - (void)printTest
 {
     if(![Printer connectedPrinter]) return;
-    
+
     NSString *filePath = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"xml"];
-   
+
     NSDictionary *dictionary = @{
                            @"{{printerStatus}}" : [Printer stringForStatus:[Printer connectedPrinter].status],
                            @"{{printerName}}" : [Printer connectedPrinter].name
                            };
-    
+
     PrintData *printData = [[PrintData alloc] initWithDictionary:dictionary atFilePath:filePath];
-    
+
     [self print:printData];
 }
 
 - (void)print:(PrintData *)printData
 {
     [self log:@"Queued a print job"];
-    
+
     PrinterJobBlock printJob = ^(BOOL portConnected) {
-        
+
         BOOL error = !portConnected || !self.isReadyToPrint;
-        
+
         if(!error) {
-            
+
             NSDictionary *dictionary = printData.dictionary;
             NSString *filePath = printData.filePath;
-            
+
             NSData *contents = [[NSFileManager defaultManager] contentsAtPath:filePath];
             NSMutableString *s = [[NSMutableString alloc] initWithData:contents encoding:NSUTF8StringEncoding];
-            
+
             [dictionary enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
                 [s replaceOccurrencesOfString:key withString:value options:NSCaseInsensitiveSearch range:NSMakeRange(0, [s length])];
             }];
-            
+
             PrintParser *parser = [[PrintParser alloc] init];
             NSData *data = [parser parse:[s dataUsingEncoding:NSUTF8StringEncoding]];
-            
+
             if(![self printChit:data]) {
                 self.status = PrinterStatusPrintError;
                 error = YES;
             }
         }
-        
+
         if(error) {
             [self log:@"Print job unsuccessful"];
             [self jobFailedRetry:YES];
@@ -394,7 +394,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
             [self jobWasSuccessful];
         }
     };
-    
+
     objc_setAssociatedObject(printJob, PrintJobTag, @1, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
     [self addJob:printJob];
@@ -403,31 +403,31 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 - (BOOL)printChit:(NSData *)data
 {
     [self log:@"Printing"];
-    
+
     BOOL error = NO;
     BOOL completed = NO;
-    
+
     // Add cut manually
     NSMutableData *printData = [NSMutableData dataWithData:data];
     [printData appendData:[kPrinterCMD_CutFull dataUsingEncoding:NSASCIIStringEncoding]];
-    
+
     int commandSize = [printData length];
     unsigned char *dataToSentToPrinter = (unsigned char *)malloc(commandSize);
     [printData getBytes:dataToSentToPrinter];
-    
+
     do {
         @try {
             int totalAmountWritten = 0;
             while (totalAmountWritten < commandSize) {
-                
+
                 int remaining = commandSize - totalAmountWritten;
-                
+
                 int blockSize = (remaining > 1024) ? 1024 : remaining;
-                
+
                 int amountWritten = [self.port writePort:dataToSentToPrinter :totalAmountWritten :blockSize];
                 totalAmountWritten += amountWritten;
             }
-            
+
             if (totalAmountWritten < commandSize) {
                 error = YES;
             }
@@ -436,14 +436,14 @@ static char const * const ConnectJobTag = "ConnectJobTag";
             [self log:[exception description]];
             error = YES;
         }
-        
+
         completed = YES;
-        
+
         free(dataToSentToPrinter);
-        
+
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:kHeartbeatInterval]];
     } while (!completed);
-    
+
     return !error;
 }
 
@@ -457,7 +457,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
     };
 
     objc_setAssociatedObject(heartbeatJob, HeartbeatTag, @1, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
+
     [self addJob:heartbeatJob];
 }
 
@@ -483,11 +483,11 @@ static char const * const ConnectJobTag = "ConnectJobTag";
     if (![self performCompatibilityCheck]) {
         return;
     }
-    
+
     PrinterStatus status = PrinterStatusNoStatus;
     StarPrinterStatus_2 printerStatus;
     [self.port getParsedStatus:&printerStatus :2];
-    
+
     if(printerStatus.offline == SM_TRUE) {
         if(printerStatus.coverOpen == SM_TRUE) {
             status = PrinterStatusCoverOpen;
@@ -498,13 +498,13 @@ static char const * const ConnectJobTag = "ConnectJobTag";
             status = PrinterStatusLowPaper;
         }
     }
-    
+
     // CoverOpen, LowPaper, or OutOfPaper
     if(status != PrinterStatusNoStatus) {
         self.status = status;
         return;
     }
-    
+
     // Printer did have error, but error is now resolved
     if(self.hasError) {
         self.status = self.previousOnlineStatus;
@@ -514,13 +514,13 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 - (void)setStatus:(PrinterStatus)status
 {
     if(self.status != status) {
-        
+
         if(!self.isOffline && self.status != PrinterStatusConnecting) {
             self.previousOnlineStatus = self.status;
         }
-        
+
         _status = status;
-        
+
         if(_delegate) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_delegate printer:self didChangeStatus:status];
@@ -534,7 +534,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 - (NSString *)description
 {
     NSString *desc = [NSString stringWithFormat:@"<Printer: %p { name:%@ mac:%@ model:%@ portName:%@ status:%@}>", self, self.name, self.macAddress, self.modelName, self.portName, [Printer stringForStatus:self.status]];
-    
+
     return desc;
 }
 
@@ -573,18 +573,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
 */
 - (BOOL)isCompatible
 {
-    BOOL compatible = YES;
-    
-    NSArray *p = [self.modelName componentsSeparatedByString:@" ("];
-    if ([p count] == 2) {
-        
-        NSString *modelNumber = p[0];
-        if ([modelNumber length] == 6 && [modelNumber rangeOfString:@"TSP1"].location != NSNotFound) {
-            compatible = NO;
-        }
-    }
-    
-    return compatible;
+    return YES;
 }
 
 - (BOOL)performCompatibilityCheck
@@ -593,7 +582,7 @@ static char const * const ConnectJobTag = "ConnectJobTag";
     if (!compatible) {
         self.status = PrinterStatusIncompatible;
     }
-    
+
     return compatible;
 }
 
