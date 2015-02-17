@@ -191,6 +191,10 @@ typedef enum
              compressionEnable:(BOOL)compressionEnable
                 withDrawerKick:(BOOL)drawerKick;
 
++ (UIImage *)imageWithString:(NSString *)string
+                  font:(UIFont *)font
+                  width:(CGFloat)width;
+
 #pragma mark Sample Receipt (Line)
 
 + (void)PrintSampleReceipt3InchWithPortname:(NSString *)portName
