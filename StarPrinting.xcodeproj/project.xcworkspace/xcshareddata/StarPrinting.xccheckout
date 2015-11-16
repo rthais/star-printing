@@ -6,22 +6,18 @@
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>BBB4975F-F247-43A8-B7D5-609FFA3BA886</string>
-	<key>IDESourceControlProjectName</key>
-	<string>StarPrinting</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>DA044977D745609EBFC91E7C0BE5814BA11B6304</key>
-		<string>github.com:opentable/star-printing.git</string>
+		<string>github.com:rthais/star-printing.git</string>
 	</dict>
-	<key>IDESourceControlProjectPath</key>
-	<string>StarPrinting.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>DA044977D745609EBFC91E7C0BE5814BA11B6304</key>
-		<string>../..</string>
+		<string>star-printing/</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>github.com:opentable/star-printing.git</string>
+	<string>github.com:rthais/star-printing.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>

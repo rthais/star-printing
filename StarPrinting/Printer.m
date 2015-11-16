@@ -485,29 +485,36 @@ static char const * const ConnectJobTag = "ConnectJobTag";
     }
 
     PrinterStatus status = PrinterStatusNoStatus;
-    StarPrinterStatus_2 printerStatus;
-    [self.port getParsedStatus:&printerStatus :2];
+    @try {
+        StarPrinterStatus_2 printerStatus;
+        [self.port getParsedStatus:&printerStatus :2];
 
-    if(printerStatus.offline == SM_TRUE) {
-        if(printerStatus.coverOpen == SM_TRUE) {
-            status = PrinterStatusCoverOpen;
-        } else if(printerStatus.receiptPaperEmpty == SM_TRUE) {
-            status = PrinterStatusOutOfPaper;
-        } else if(printerStatus.receiptPaperNearEmptyInner == SM_TRUE ||
-                  printerStatus.receiptPaperNearEmptyOuter == SM_TRUE) {
-            status = PrinterStatusLowPaper;
+        if(printerStatus.offline == SM_TRUE) {
+            if(printerStatus.coverOpen == SM_TRUE) {
+                status = PrinterStatusCoverOpen;
+            } else if(printerStatus.receiptPaperEmpty == SM_TRUE) {
+                status = PrinterStatusOutOfPaper;
+            } else if(printerStatus.receiptPaperNearEmptyInner == SM_TRUE ||
+                      printerStatus.receiptPaperNearEmptyOuter == SM_TRUE) {
+                status = PrinterStatusLowPaper;
+            }
+        }
+
+        // CoverOpen, LowPaper, or OutOfPaper
+        if(status != PrinterStatusNoStatus) {
+            self.status = status;
+            return;
+        }
+
+        // Printer did have error, but error is now resolved
+        if(self.hasError) {
+            self.status = self.previousOnlineStatus;
         }
     }
-
-    // CoverOpen, LowPaper, or OutOfPaper
-    if(status != PrinterStatusNoStatus) {
+    @catch (PortException *e)
+    {
         self.status = status;
         return;
-    }
-
-    // Printer did have error, but error is now resolved
-    if(self.hasError) {
-        self.status = self.previousOnlineStatus;
     }
 }
 
